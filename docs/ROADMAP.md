@@ -1,0 +1,31 @@
+# Roadmap — Tile Calculator
+
+## Phase 0 — Product spec ✅
+
+Frozen in `docs/PRODUCT_SPEC.md`.
+
+## Phase 1 — Foundation ✅ (this bootstrap)
+
+Expo, Router, TypeScript, i18n, units, AdService/AnalyticsService boundaries, tests.
+
+## Phase 2 — Calculation engine ✅
+
+Pure TypeScript engine + acceptance cases 1–20.
+
+## Phase 3 — MVP UX (current)
+
+Single calculator screen: floor/walls, openings, tile presets, layout, reserve, optional packaging/price, explanation.
+
+## Phase 4 — Ads & analytics production
+
+Yandex Mobile Ads banners after the result; AppMetrica with the taxonomy in the product spec.
+
+## Phase 5 — Product quality
+
+Last-calculation persistence, accessibility pass, privacy policy hosting.
+
+## Phase 6 — RuStore release
+
+Signing, listing, privacy URL, version 1.0.0 / versionCode 1.
+
+Deferred: grout, adhesive, L-shape, saved projects, share/PDF (may copy wallpaper Phase 5B later).
