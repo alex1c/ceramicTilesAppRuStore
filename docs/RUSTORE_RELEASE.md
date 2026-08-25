@@ -12,11 +12,18 @@
 
 ```powershell
 $env:APP_VARIANT = "production"
+$env:KEEP_PRODUCTION_AUTOLINKING = "1"
+# Windows: build from a short real path (e.g. D:\t) if CMake hits MAX_PATH (~260).
+# Do not use subst (RN codegen “different roots”).
 npm run prebuild:android:production
 npm run apply:release-signing
 npm run verify:release-signing
 # then Gradle bundleRelease from generated android/
 ```
+
+Verified AAB (local, not in git): `release-artifacts/tile-1.0.0-v1.aab`
+
+Production release blocks `SYSTEM_ALERT_WINDOW` via `android.blockedPermissions` when `APP_VARIANT=production`.
 
 ## Verify AAB
 

@@ -48,6 +48,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 				monochromeImage: './assets/android-icon-monochrome.png',
 			},
 			predictiveBackGestureEnabled: false,
+			// Expo CNG template + debug overlays inject SYSTEM_ALERT_WINDOW.
+			// Block it in production release so RuStore AAB does not declare it.
+			...(isProduction
+				? {
+						blockedPermissions: [
+							'android.permission.SYSTEM_ALERT_WINDOW',
+						],
+					}
+				: {}),
 		},
 		plugins,
 		extra: {

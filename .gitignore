@@ -50,6 +50,7 @@ yarn-error.*
 *.apk
 *.aab
 *.ipa
+/release-artifacts/
 
 # Android Studio / IDE local files
 .idea/
