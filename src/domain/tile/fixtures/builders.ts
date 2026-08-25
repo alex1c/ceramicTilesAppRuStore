@@ -10,7 +10,7 @@ export function floorInput(
 		reservePercent?: number
 	} = {},
 ): TileCalculationInput {
-	return {
+return {
 		surface: {
 			kind: 'floor',
 			lengthM: overrides.lengthM ?? 4,
@@ -18,6 +18,7 @@ export function floorInput(
 		},
 		tileWidthCm: overrides.tileWidthCm ?? 60,
 		tileHeightCm: overrides.tileHeightCm ?? 60,
+		orientation: overrides.orientation ?? 'as-entered',
 		layoutPattern: overrides.layoutPattern ?? 'straight',
 		reservePercent: overrides.reservePercent ?? 0,
 		packaging: overrides.packaging ?? { enabled: false },
@@ -38,6 +39,7 @@ export function wallsInput(
 		},
 		tileWidthCm: overrides.tileWidthCm ?? 60,
 		tileHeightCm: overrides.tileHeightCm ?? 60,
+		orientation: overrides.orientation ?? 'as-entered',
 		layoutPattern: overrides.layoutPattern ?? 'straight',
 		reservePercent: overrides.reservePercent ?? 0,
 		packaging: overrides.packaging ?? { enabled: false },

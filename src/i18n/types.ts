@@ -37,6 +37,9 @@ export interface TranslationTree {
 			custom: string
 			width: string
 			height: string
+			orientationTitle: string
+			orientationEconomical: string
+			orientationHint: string
 		}
 		layout: {
 			title: string
@@ -79,13 +82,20 @@ export interface TranslationTree {
 		result: {
 			buyBoxes: string
 			needTiles: string
+			/** Accusative (Нужно / Купить): плитку / упаковку */
 			boxUnitOne: string
 			boxUnitFew: string
 			boxUnitMany: string
 			tileUnitOne: string
 			tileUnitFew: string
 			tileUnitMany: string
-			requiredTiles: string
+			/** Nominative (Итого / По раскладке): плитка / упаковка */
+			tileNomOne: string
+			tileNomFew: string
+			tileNomMany: string
+			boxNomOne: string
+			boxNomFew: string
+			boxNomMany: string
 			inBoxTiles: string
 			inBoxArea: string
 			purchasedTiles: string
@@ -97,27 +107,49 @@ export interface TranslationTree {
 			reserve: string
 			requiredArea: string
 			cost: string
+			layoutBase: string
+			areaBase: string
+			reserveAdded: string
+			totalTiles: string
 			pricePrincipleTile: string
 			pricePrincipleBox: string
 			pricePrincipleM2Purchased: string
 			pricePrincipleM2Required: string
+			schemeTitle: string
+			schemeEstimateNote: string
+			schemeOpeningsNote: string
+			schemePanelFloor: string
+			schemePanelWall: string
+			schemeLabelFloor: string
+			schemeLabelWall: string
+			schemeLegendFull: string
+			schemeLegendCut: string
 		}
 		explanation: {
 			toggleLabel: string
 			toggleHintCollapsed: string
 			toggleHintExpanded: string
 			noFakePrecision: string
+			noFakePrecisionLayout: string
+			noFakePrecisionEstimate: string
 			surfaceTitle: string
 			surfaceFloor: string
 			surfaceWalls: string
 			openingsTitle: string
 			openingsBody: string
+			openingsEstimateNote: string
 			tileTitle: string
 			tileBody: string
+			layoutTitle: string
+			layoutBody: string
+			layoutReuseBody: string
 			rawTitle: string
 			rawBody: string
+			estimateTitle: string
+			estimateBody: string
 			reserveTitle: string
 			reserveBody: string
+			reserveBodyLayout: string
 			packagingTitle: string
 			packagingTiles: string
 			packagingArea: string

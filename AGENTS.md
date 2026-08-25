@@ -13,10 +13,10 @@ Wallpaper Calculator (`wallpaperAppRustore`) is the first sibling app. This repo
 
 ## Current phase
 
-**Phase 3 — Calculator MVP UX** (in progress with Phase 2 engine)
+**Phase 3B — Layout-aware calculation & visual scheme**
 
-Phase 0 product spec is frozen in `docs/PRODUCT_SPEC.md`.
-Phase 1 foundation + Phase 2 calculation engine ship together in this repository bootstrap.
+Phase 0–3 MVP is on `master`. Phase 3B replaces area-only quantity for straight
+rectangular layouts; see `docs/PRODUCT_SPEC.md`.
 
 ## Tech stack
 
@@ -39,7 +39,8 @@ Verify exact versions in `package.json`.
 4. **Analytics** go through `AnalyticsService` (`src/services/analytics/`).
 5. **User-facing strings** only via `src/i18n/` — no hardcoded copy in components.
 6. **Canonical lengths** in domain are **millimeters**; UI converts/displays.
-7. **No fake precision** — v1.0 does not simulate physical tile placement; layout only changes recommended reserve.
+7. **No fake precision** — straight layout is geometric but not a CAD cutting plan;
+   diagonal/offset/openings stay estimates; never claim exact opening optimization.
 8. **No secrets** in git — use `.env.example` + local `.env` (gitignored).
 
 ## Do NOT
@@ -56,6 +57,7 @@ Verify exact versions in `package.json`.
 |----------|---------|
 | [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) | Frozen v1.0 product + calculation spec, acceptance cases |
 | [docs/PRODUCT_STRATEGY.md](docs/PRODUCT_STRATEGY.md) | Portfolio context |
+| [docs/FORESTMUSIC_CALCULATOR_FOUNDATION.md](docs/FORESTMUSIC_CALCULATOR_FOUNDATION.md) | Cross-app reusable foundation audit + Calculator #3 path |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layer boundaries |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Phased delivery |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | ADR log |

@@ -53,3 +53,31 @@ Status: Accepted
 Context: Case 14.
 
 Decision: Drop openings with width or height ≤ 0 during normalize. Do not crash.
+
+## 2026-08-24 — Phase 3B layout-aware straight calculation
+
+Status: Accepted
+
+Context: Area-only `ceil(area/tile)` under-counts edge reuse and over-counts
+`ceil(W/tw)×ceil(H/th)` when identical remainders share a source tile.
+
+Decision:
+
+1. Straight layouts without openings use row/column geometry + 1D edge yield +
+   conservative +1 corner tile when both remainders exist.
+2. Reserve applies only after `baseLayoutTiles`.
+3. Multiple walls are calculated separately; no cross-wall offcut reuse.
+4. Openings force area-based estimate (openings are not per-wall positioned).
+5. Diagonal / offset stay area estimates with recommended reserve only.
+6. Domain exposes layout structure for visualization; UI must not recompute geometry.
+
+Consequences: Some Phase 0 acceptance numbers for straight floors with remainders
+change intentionally (e.g. 4×3 m with 60×60 cm: layout base 35 vs area ceil 34).
+
+## 2026-08-24 — New wall inherits previous dimensions
+
+Status: Accepted
+
+Context: Empty new-wall fields slowed multi-wall entry.
+
+Decision: `+ Добавить стену` copies the previous wall’s width and height strings.

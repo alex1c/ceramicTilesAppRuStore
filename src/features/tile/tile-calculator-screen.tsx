@@ -19,6 +19,7 @@ import {
 	type PackagingMode,
 	type PriceMode,
 	type SurfaceKind,
+	type TileOrientationId,
 } from '@/domain/tile'
 import { CalculationResult } from '@/features/tile/components/calculation-result'
 import { ChipRow } from '@/features/tile/components/chip-row'
@@ -194,6 +195,8 @@ export function TileCalculatorScreen() {
 						/>
 					</View>
 				) : null}
+
+				<OrientationControl form={form} onChange={updateForm} />
 
 				<Text style={styles.section}>{strings.calculator.layout.title}</Text>
 				<ChipRow
@@ -382,6 +385,87 @@ interface WallsEditorProps {
 	onChange: (patch: Partial<TileFormValues>) => void
 }
 
+/**
+ * Compact orientation chips for non-square tiles.
+ * Labels show physical extents; «Экономичнее» comes from domain comparison when parseable.
+ */
+function OrientationControl({
+	form,
+	onChange,
+}: {
+	form: TileFormValues
+	onChange: (patch: Partial<TileFormValues>) => void
+}) {
+	const strings = t()
+	const comparison = useMemo(() => {
+		const parsed = parseTileForm(form)
+		if (!parsed.ok) {
+			return null
+		}
+
+		if (parsed.input.tileWidthCm === parsed.input.tileHeightCm) {
+			return null
+		}
+
+		const outcome = calculateTiles(parsed.input)
+		if (!outcome.ok) {
+			return {
+				widthCm: parsed.input.tileWidthCm,
+				heightCm: parsed.input.tileHeightCm,
+				options: [] as { orientation: TileOrientationId; isEconomical: boolean }[],
+			}
+		}
+
+		return {
+			widthCm: parsed.input.tileWidthCm,
+			heightCm: parsed.input.tileHeightCm,
+			options: outcome.result.layout.orientationOptions,
+		}
+	}, [form])
+
+	if (!comparison) {
+		return null
+	}
+
+	const { widthCm, heightCm, options } = comparison
+	const asEnteredLabel = formatOrientationChip(widthCm, heightCm)
+	const rotatedLabel = formatOrientationChip(heightCm, widthCm)
+	const asEnteredEco = options.find((o) => o.orientation === 'as-entered')?.isEconomical
+	const rotatedEco = options.find((o) => o.orientation === 'rotated')?.isEconomical
+
+	return (
+		<View>
+			<Text style={styles.section}>{strings.calculator.tile.orientationTitle}</Text>
+			<Text style={styles.hint}>{strings.calculator.tile.orientationHint}</Text>
+			<ChipRow
+				options={[
+					{
+						id: 'as-entered',
+						label: asEnteredEco
+							? `${asEnteredLabel} · ${strings.calculator.tile.orientationEconomical}`
+							: asEnteredLabel,
+					},
+					{
+						id: 'rotated',
+						label: rotatedEco
+							? `${rotatedLabel} · ${strings.calculator.tile.orientationEconomical}`
+							: rotatedLabel,
+					},
+				]}
+				selectedId={form.orientation}
+				onSelect={(orientation: TileOrientationId) => onChange({ orientation })}
+			/>
+		</View>
+	)
+}
+
+function formatOrientationChip(widthCm: number, heightCm: number): string {
+	const arrow = widthCm >= heightCm ? '↔' : '↕'
+	const format = (value: number) =>
+		Number.isInteger(value) ? String(value) : String(value).replace('.', ',')
+	return `${arrow} ${format(widthCm)}×${format(heightCm)}`
+}
+
 function WallsEditor({ form, fieldError, onChange }: WallsEditorProps) {
 	const strings = t()
 
@@ -453,8 +537,17 @@ function WallsEditor({ form, fieldError, onChange }: WallsEditorProps) {
 			<Pressable
 				accessibilityRole="button"
 				onPress={() => {
+					const previous = form.walls[form.walls.length - 1]
 					onChange({
-						walls: [...form.walls, { id: createId('wall'), width: '', height: '' }],
+						walls: [
+							...form.walls,
+							{
+								id: createId('wall'),
+								// Inherit previous wall dimensions so the user only edits what differs.
+								width: previous?.width ?? '',
+								height: previous?.height ?? '',
+							},
+						],
 					})
 					getAnalyticsService().track('wall_added')
 				}}

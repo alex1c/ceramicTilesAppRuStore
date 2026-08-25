@@ -3,8 +3,19 @@ import { RECOMMENDED_RESERVE_PERCENT } from '../defaults'
 import { floorInput, wallsInput } from '../fixtures/builders'
 import { parseUserDecimalNumber } from '@/units/parse-decimal-input'
 
+/**
+ * Phase 3B acceptance suite.
+ *
+ * Intentional expectation changes vs Phase 0–3 area model (documented):
+ * - Case 1–6, 13, 17–18: straight floor 4×3 / 60×60 now uses layout base 35
+ *   (was area ceil 34). Reserve / packaging / price follow from 35.
+ * - Case 13 diagonal: reserve applied after ceil(area/tile)=34 → 38
+ *   (was ceil(raw×1.1)=37). Same Phase 3B reserve pipeline.
+ * - Case 18 / per-m²: requiredAreaWithReserve = finalTiles × tileArea
+ *   (was surfaceArea × reserveFactor).
+ */
 describe('tile calculator acceptance cases', () => {
-	it('case 1 — basic floor, 0% reserve', () => {
+	it('case 1 — basic floor, 0% reserve (layout-aware)', () => {
 		const outcome = calculateTiles(floorInput({ reservePercent: 0 }))
 
 		expect(outcome.ok).toBe(true)
@@ -15,7 +26,10 @@ describe('tile calculator acceptance cases', () => {
 		expect(outcome.result.effectiveAreaM2).toBeCloseTo(12, 10)
 		expect(outcome.result.tileAreaM2).toBeCloseTo(0.36, 10)
 		expect(outcome.result.rawTiles).toBeCloseTo(100 / 3, 10)
-		expect(outcome.result.tilesWithReserve).toBe(34)
+		// Phase 3B: 6×5 full + 5 vertical edge sources (400 mm rem) = 35
+		expect(outcome.result.baseLayoutTileCount).toBe(35)
+		expect(outcome.result.tilesWithReserve).toBe(35)
+		expect(outcome.result.layout.quantityMode).toBe('layout-straight')
 	})
 
 	it('case 2 — floor + 10% reserve', () => {
@@ -23,7 +37,9 @@ describe('tile calculator acceptance cases', () => {
 
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
-			expect(outcome.result.tilesWithReserve).toBe(37)
+			// ceil(35 × 1.1) = 39
+			expect(outcome.result.tilesWithReserve).toBe(39)
+			expect(outcome.result.reserveTileCount).toBe(4)
 		}
 	})
 
@@ -40,10 +56,10 @@ describe('tile calculator acceptance cases', () => {
 			return
 		}
 
-		expect(outcome.result.tilesWithReserve).toBe(37)
+		expect(outcome.result.tilesWithReserve).toBe(39)
 		expect(outcome.result.packaging?.boxes).toBe(10)
 		expect(outcome.result.packaging?.purchasedTiles).toBe(40)
-		expect(outcome.result.packaging?.remainingTiles).toBe(3)
+		expect(outcome.result.packaging?.remainingTiles).toBe(1)
 	})
 
 	it('case 4 — price per box', () => {
@@ -71,8 +87,8 @@ describe('tile calculator acceptance cases', () => {
 
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
-			expect(outcome.result.tilesWithReserve).toBe(37)
-			expect(outcome.result.price?.total).toBe(9250)
+			expect(outcome.result.tilesWithReserve).toBe(39)
+			expect(outcome.result.price?.total).toBe(9750)
 		}
 	})
 
@@ -86,8 +102,9 @@ describe('tile calculator acceptance cases', () => {
 
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
-			expect(outcome.result.requiredAreaWithReserveM2).toBeCloseTo(13.2, 10)
-			expect(outcome.result.price?.total).toBe(19800)
+			// 39 tiles × 0.36 m² = 14.04
+			expect(outcome.result.requiredAreaWithReserveM2).toBeCloseTo(14.04, 10)
+			expect(outcome.result.price?.total).toBe(21060)
 		}
 	})
 
@@ -111,6 +128,7 @@ describe('tile calculator acceptance cases', () => {
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
 			expect(outcome.result.effectiveAreaM2).toBeCloseTo(18.9, 10)
+			expect(outcome.result.layout.panels).toHaveLength(2)
 		}
 	})
 
@@ -125,6 +143,8 @@ describe('tile calculator acceptance cases', () => {
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
 			expect(outcome.result.effectiveAreaM2).toBeCloseTo(9.0, 10)
+			expect(outcome.result.layout.quantityMode).toBe('area-estimate')
+			expect(outcome.result.layout.openingsEstimated).toBe(true)
 		}
 	})
 
@@ -191,7 +211,10 @@ describe('tile calculator acceptance cases', () => {
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
 			expect(outcome.result.trace.reservePercent).toBe(10)
-			expect(outcome.result.tilesWithReserve).toBe(37)
+			expect(outcome.result.layout.quantityMode).toBe('area-estimate')
+			// ceil(34 × 1.1) = 38 — reserve after area-ceil base
+			expect(outcome.result.baseLayoutTileCount).toBe(34)
+			expect(outcome.result.tilesWithReserve).toBe(38)
 		}
 	})
 
@@ -207,6 +230,7 @@ describe('tile calculator acceptance cases', () => {
 		if (outcome.ok) {
 			expect(outcome.result.effectiveAreaM2).toBeCloseTo(8.1, 10)
 			expect(outcome.result.trace.openingsAreaM2).toBe(0)
+			expect(outcome.result.layout.quantityMode).toBe('layout-straight')
 		}
 	})
 
@@ -251,9 +275,10 @@ describe('tile calculator acceptance cases', () => {
 
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
+			expect(outcome.result.tilesWithReserve).toBe(39)
 			expect(outcome.result.packaging?.boxes).toBe(7)
 			expect(outcome.result.packaging?.purchasedTiles).toBe(42)
-			expect(outcome.result.packaging?.remainingTiles).toBe(5)
+			expect(outcome.result.packaging?.remainingTiles).toBe(3)
 		}
 	})
 
@@ -267,7 +292,7 @@ describe('tile calculator acceptance cases', () => {
 
 		expect(outcome.ok).toBe(true)
 		if (outcome.ok) {
-			expect(outcome.result.requiredAreaWithReserveM2).toBeCloseTo(13.2, 10)
+			expect(outcome.result.requiredAreaWithReserveM2).toBeCloseTo(14.04, 10)
 			expect(outcome.result.packaging?.boxes).toBe(10)
 			expect(outcome.result.packaging?.purchasedAreaM2).toBeCloseTo(14.4, 10)
 		}
@@ -340,6 +365,7 @@ describe('tile calculator acceptance cases', () => {
 			}),
 		)
 
+		// 40 purchased tiles × 250 for both modes (10 boxes × 4; or 14.4/0.36)
 		expect(tilesPerBox.ok && tilesPerBox.result.price?.total).toBe(10_000)
 		expect(areaPerBox.ok && areaPerBox.result.price?.total).toBe(10_000)
 	})

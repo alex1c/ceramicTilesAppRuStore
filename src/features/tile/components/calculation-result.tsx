@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import type { PresentedTileResult } from '@/features/tile/presenter/present-tile-result'
 import { colors, radii, spacing, typography } from '@/theme'
 import { ExplanationSection } from './explanation-section'
+import { LayoutScheme } from './layout-scheme'
 
 interface CalculationResultProps {
 	result: PresentedTileResult
@@ -9,7 +10,7 @@ interface CalculationResultProps {
 	onToggleExplanation: () => void
 }
 
-/** Primary result card — packaging/tile hero plus expandable explanation. */
+/** Primary result card — packaging/tile hero, scheme, expandable explanation. */
 export function CalculationResult({
 	result,
 	explanationExpanded,
@@ -39,6 +40,7 @@ export function CalculationResult({
 			{result.pricePrinciple ? (
 				<Text style={styles.principle}>{result.pricePrinciple}</Text>
 			) : null}
+			<LayoutScheme layout={result.layout} />
 			<ExplanationSection
 				expanded={explanationExpanded}
 				onToggle={onToggleExplanation}

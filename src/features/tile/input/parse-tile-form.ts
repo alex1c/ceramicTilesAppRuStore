@@ -7,6 +7,7 @@ import {
 	type PriceMode,
 	type SurfaceKind,
 	type TileCalculationInput,
+	type TileOrientationId,
 } from '@/domain/tile'
 import {
 	parseUserDecimalNumber,
@@ -37,6 +38,7 @@ export interface TileFormValues {
 	tilePresetId: TilePresetId
 	tileWidth: string
 	tileHeight: string
+	orientation: TileOrientationId
 	layoutPattern: LayoutPatternId
 	reservePreset: '0' | '5' | '10' | '15' | 'custom'
 	reserveCustom: string
@@ -61,6 +63,7 @@ export const DEFAULT_TILE_FORM: TileFormValues = {
 	tilePresetId: '60x60',
 	tileWidth: '60',
 	tileHeight: '60',
+	orientation: 'as-entered',
 	layoutPattern: 'straight',
 	reservePreset: '10',
 	reserveCustom: '10',
@@ -227,6 +230,7 @@ export function parseTileForm(values: TileFormValues): ParseFormResult {
 			surface,
 			tileWidthCm,
 			tileHeightCm,
+			orientation: values.orientation,
 			layoutPattern: values.layoutPattern,
 			reservePercent: reservePercent ?? RECOMMENDED_RESERVE_PERCENT[values.layoutPattern],
 			packaging,
