@@ -125,6 +125,31 @@ export interface TranslationTree {
 			schemeLegendFull: string
 			schemeLegendCut: string
 		}
+		share: {
+			button: string
+			sheetTitle: string
+			textAction: string
+			textActionHint: string
+			pdfAction: string
+			pdfActionHint: string
+			cancel: string
+			reportTitle: string
+			footer: string
+			sections: {
+				surface: string
+				tile: string
+				result: string
+				note: string
+			}
+			status: {
+				generatingPdf: string
+			}
+			errors: {
+				generic: string
+				unavailable: string
+				pdfFailed: string
+			}
+		}
 		explanation: {
 			toggleLabel: string
 			toggleHintCollapsed: string

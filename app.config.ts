@@ -2,15 +2,24 @@ import type { ConfigContext, ExpoConfig } from 'expo/config'
 
 /**
  * Expo app config — Continuous Native Generation entry.
- * Local development includes expo-dev-client; production builds can omit it later.
+ *
+ * Production / RuStore:
+ *   APP_VARIANT=production
+ *   npm run prebuild:android:production
+ *
+ * Identity: launcher icon ≠ adaptive icon ≠ splash ≠ RuStore store icon.
+ * Master artwork: assets/icon_gpt.png
  */
 export default ({ config }: ConfigContext): ExpoConfig => {
 	const isProduction = process.env.APP_VARIANT === 'production'
 
-	const plugins: NonNullable<ExpoConfig['plugins']> = ['expo-router']
+	const plugins: NonNullable<ExpoConfig['plugins']> = [
+		'expo-router',
+		'expo-sharing',
+	]
 
 	if (!isProduction) {
-		plugins.push('expo-dev-client')
+		plugins.splice(1, 0, 'expo-dev-client')
 	}
 
 	return {
@@ -43,6 +52,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 		plugins,
 		extra: {
 			appVariant: isProduction ? 'production' : 'development',
+			foundationVersion: '1.0.0',
+			splashAsset: './assets/splash-icon.png',
 		},
 	}
 }

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import type { PresentedTileResult } from '@/features/tile/presenter/present-tile-result'
 import { colors, radii, spacing, typography } from '@/theme'
@@ -8,6 +9,8 @@ interface CalculationResultProps {
 	result: PresentedTileResult
 	explanationExpanded: boolean
 	onToggleExplanation: () => void
+	/** Optional footer (Share/PDF, single banner). */
+	footer?: ReactNode
 }
 
 /** Primary result card — packaging/tile hero, scheme, expandable explanation. */
@@ -15,6 +18,7 @@ export function CalculationResult({
 	result,
 	explanationExpanded,
 	onToggleExplanation,
+	footer,
 }: CalculationResultProps) {
 	return (
 		<View
@@ -47,6 +51,7 @@ export function CalculationResult({
 				phaseNote={result.phaseNote}
 				steps={result.explanationSteps}
 			/>
+			{footer}
 		</View>
 	)
 }

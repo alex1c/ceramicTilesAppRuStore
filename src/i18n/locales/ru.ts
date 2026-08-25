@@ -124,6 +124,31 @@ export const ru: TranslationTree = {
 			schemeLegendFull: 'целая плитка',
 			schemeLegendCut: 'подрезка',
 		},
+		share: {
+			button: 'Поделиться',
+			sheetTitle: 'Поделиться результатом',
+			textAction: 'Текст',
+			textActionHint: 'Краткий результат для мессенджера',
+			pdfAction: 'PDF',
+			pdfActionHint: 'Отчёт для печати или файла',
+			cancel: 'Отмена',
+			reportTitle: 'Расчёт плитки',
+			footer: 'Рассчитано в приложении «Калькулятор плитки».',
+			sections: {
+				surface: 'Поверхность',
+				tile: 'Плитка и раскладка',
+				result: 'Результат',
+				note: 'Важно',
+			},
+			status: {
+				generatingPdf: 'Готовим PDF…',
+			},
+			errors: {
+				generic: 'Не удалось поделиться. Попробуйте ещё раз.',
+				unavailable: 'Обмен недоступен на этом устройстве.',
+				pdfFailed: 'Не удалось создать PDF.',
+			},
+		},
 		explanation: {
 			toggleLabel: 'Как рассчитано',
 			toggleHintCollapsed: 'Показать шаги расчёта',

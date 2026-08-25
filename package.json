@@ -7,6 +7,10 @@
     "start": "expo start",
     "android": "expo run:android",
     "prebuild:android": "expo prebuild --platform android",
+    "prebuild:android:production": "node scripts/prebuild-android-production.cjs",
+    "restore:dev-autolinking": "node scripts/restore-dev-autolinking.cjs",
+    "apply:release-signing": "node scripts/apply-release-signing.cjs",
+    "verify:release-signing": "node scripts/verify-release-signing.cjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
@@ -14,11 +18,15 @@
     "validate": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
+    "@appmetrica/react-native-analytics": "^4.2.0",
     "expo": "~57.0.16",
     "expo-constants": "~57.0.14",
     "expo-dev-client": "~57.0.15",
+    "expo-file-system": "~57.0.5",
     "expo-linking": "~57.0.7",
+    "expo-print": "~57.0.1",
     "expo-router": "~57.0.16",
+    "expo-sharing": "~57.0.15",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -26,7 +34,8 @@
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
-    "react-native-worklets": "0.10.1"
+    "react-native-worklets": "0.10.1",
+    "yandex-mobile-ads": "^8.3.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",

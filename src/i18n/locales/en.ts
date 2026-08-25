@@ -124,6 +124,31 @@ export const en: TranslationTree = {
 			schemeLegendFull: 'full tile',
 			schemeLegendCut: 'cut edge',
 		},
+		share: {
+			button: 'Share',
+			sheetTitle: 'Share result',
+			textAction: 'Text',
+			textActionHint: 'Short result for messengers',
+			pdfAction: 'PDF',
+			pdfActionHint: 'Report for print or file',
+			cancel: 'Cancel',
+			reportTitle: 'Tile calculation',
+			footer: 'Calculated in Tile Calculator.',
+			sections: {
+				surface: 'Surface',
+				tile: 'Tile and layout',
+				result: 'Result',
+				note: 'Note',
+			},
+			status: {
+				generatingPdf: 'Preparing PDF…',
+			},
+			errors: {
+				generic: 'Could not share. Try again.',
+				unavailable: 'Sharing is unavailable on this device.',
+				pdfFailed: 'Could not create PDF.',
+			},
+		},
 		explanation: {
 			toggleLabel: 'How it was calculated',
 			toggleHintCollapsed: 'Show calculation steps',

@@ -39,8 +39,13 @@ import {
 	presentTileResult,
 	type PresentedTileResult,
 } from '@/features/tile/presenter/present-tile-result'
+import { buildTileExportReport } from '@/features/tile/presenter/build-tile-export-report'
+import type { ExportReport } from '@/export'
 import { t } from '@/i18n'
 import { getAnalyticsService } from '@/services/analytics'
+import { ResultBanner } from '@/services/ads/result-banner'
+import { ShareExportButton } from '@/ui/result/share-export-button'
+import { ShareExportSheet } from '@/ui/result/share-export-sheet'
 import { colors, radii, spacing, typography } from '@/theme'
 
 function createId(prefix: string): string {
@@ -57,7 +62,9 @@ export function TileCalculatorScreen() {
 	const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({})
 	const [domainError, setDomainError] = useState<string | null>(null)
 	const [presented, setPresented] = useState<PresentedTileResult | null>(null)
+	const [exportReport, setExportReport] = useState<ExportReport | null>(null)
 	const [explanationExpanded, setExplanationExpanded] = useState(false)
+	const [shareVisible, setShareVisible] = useState(false)
 
 	useEffect(() => {
 		const analytics = getAnalyticsService()
@@ -67,7 +74,9 @@ export function TileCalculatorScreen() {
 
 	const updateForm = useCallback((patch: Partial<TileFormValues>) => {
 		setForm((current) => ({ ...current, ...patch }))
+		// Clear result + export together so Share/PDF cannot use a stale report.
 		setPresented(null)
+		setExportReport(null)
 		setDomainError(null)
 	}, [])
 
@@ -87,6 +96,10 @@ export function TileCalculatorScreen() {
 		if (!parsed.ok) {
 			setFieldErrors(parsed.errors)
 			setPresented(null)
+			setExportReport(null)
+			getAnalyticsService().track('calculation_failed', {
+				error_category: 'validation',
+			})
 			return
 		}
 
@@ -95,11 +108,18 @@ export function TileCalculatorScreen() {
 		if (!outcome.ok) {
 			setDomainError(mapDomainError(outcome.error.code))
 			setPresented(null)
+			setExportReport(null)
+			getAnalyticsService().track('calculation_failed', {
+				error_category: 'calculation',
+			})
 			return
 		}
 
+		const nextPresented = presentTileResult(outcome.result)
 		setDomainError(null)
-		setPresented(presentTileResult(outcome.result))
+		setPresented(nextPresented)
+		setExportReport(buildTileExportReport(outcome.result, nextPresented))
+		setExplanationExpanded(false)
 		getAnalyticsService().track('calculation_completed')
 	}, [form])
 
@@ -370,11 +390,49 @@ export function TileCalculatorScreen() {
 				{presented ? (
 					<CalculationResult
 						explanationExpanded={explanationExpanded}
-						onToggleExplanation={() => setExplanationExpanded((value) => !value)}
+						onToggleExplanation={() => {
+							const next = !explanationExpanded
+							setExplanationExpanded(next)
+							if (next) {
+								getAnalyticsService().track('explanation_opened')
+							}
+						}}
 						result={presented}
+						footer={
+							<>
+								<ShareExportButton
+									onPress={() => {
+										if (!exportReport) {
+											return
+										}
+										getAnalyticsService().track('result_shared', {
+											channel: 'sheet',
+										})
+										setShareVisible(true)
+									}}
+								/>
+								{/*
+								 * Tile v1: exactly ONE banner. footer_banner is
+								 * disabled in ads-config (isBannerPlacementEnabled).
+								 */}
+								<ResultBanner
+									visible
+									mode="calculator"
+									resultKey={presented.resultKey}
+									placement="result_banner"
+									style={styles.banner}
+								/>
+							</>
+						}
 					/>
 				) : null}
 			</ScreenContainer>
+
+			<ShareExportSheet
+				visible={shareVisible}
+				report={exportReport}
+				onClose={() => setShareVisible(false)}
+			/>
 		</KeyboardAvoidingView>
 	)
 }
@@ -745,6 +803,9 @@ const styles = StyleSheet.create({
 	error: {
 		...typography.body,
 		color: colors.error,
+		marginTop: spacing.md,
+	},
+	banner: {
 		marginTop: spacing.md,
 	},
 })

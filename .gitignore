@@ -16,6 +16,11 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+credentials/keystore.properties
+credentials/*.jks
+credentials/*.keystore
+credentials/*.p12
+.package.json.pre-production-backup
 
 # Metro
 .metro-health-check*
@@ -53,3 +58,7 @@ local.properties
 
 # test coverage
 coverage/
+
+# local smoke / agent temp artifacts (never commit)
+.tmp*
+.tmp-*/

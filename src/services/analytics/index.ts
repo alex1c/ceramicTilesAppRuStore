@@ -1,25 +1,40 @@
-import { env } from '@/config/env'
-import { DevAnalyticsService } from './dev-analytics-service'
-import { NoopAnalyticsService } from './noop-analytics-service'
-import { SafeAnalyticsService } from './safe-analytics-service'
+import { createAnalyticsService } from './create-analytics-service'
 import type { AnalyticsService } from './types'
 
-function createDefaultAnalyticsService(): AnalyticsService {
-	const useNoop = Boolean(process.env.JEST_WORKER_ID) || !env.analyticsDevMode
-	return new SafeAnalyticsService(
-		useNoop ? new NoopAnalyticsService() : new DevAnalyticsService(),
-	)
-}
+let analyticsService: AnalyticsService = createAnalyticsService()
 
-let analyticsService: AnalyticsService = createDefaultAnalyticsService()
-
+/** Returns the process-wide analytics service instance. */
 export function getAnalyticsService(): AnalyticsService {
 	return analyticsService
 }
 
+/** Allows tests or future DI to replace the analytics provider. */
 export function setAnalyticsService(service: AnalyticsService): void {
 	analyticsService = service
 }
 
 export type { AnalyticsService } from './types'
-export type { AnalyticsEventName } from './event-taxonomy'
+export type {
+	AdErrorCategoryAnalyticsValue,
+	AdFormatAnalyticsValue,
+	AdPlacementAnalyticsValue,
+	AnalyticsErrorCategory,
+	AnalyticsEventMap,
+	AnalyticsEventName,
+	AnalyticsScreenName,
+	ModeAnalyticsValue,
+	ShareChannelAnalyticsValue,
+} from './event-taxonomy'
+
+export { assertNoRawDimensionParams } from './property-mappers'
+
+export { AppMetricaAnalyticsService } from './appmetrica-analytics-service'
+export { DevAnalyticsService } from './dev-analytics-service'
+export { NoopAnalyticsService } from './noop-analytics-service'
+export { RecordingAnalyticsService } from './recording-analytics-service'
+export { SafeAnalyticsService } from './safe-analytics-service'
+export {
+	createAnalyticsService,
+	hasConfiguredAppMetricaKey,
+	PLACEHOLDER_API_KEY,
+} from './create-analytics-service'

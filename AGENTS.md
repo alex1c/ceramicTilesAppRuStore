@@ -13,10 +13,9 @@ Wallpaper Calculator (`wallpaperAppRustore`) is the first sibling app. This repo
 
 ## Current phase
 
-**Phase 3B — Layout-aware calculation & visual scheme**
+**Production integrations complete (Share / PDF / AppMetrica / single banner).**
 
-Phase 0–3 MVP is on `master`. Phase 3B replaces area-only quantity for straight
-rectangular layouts; see `docs/PRODUCT_SPEC.md`.
+Calculator Phase 3B is on `master`. Next engineering step: signed production AAB.
 
 ## Tech stack
 
